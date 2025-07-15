@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}-一覧ページ{% endblock %}
+
+{% block content %}
+    <h1>図書一覧</h1>
+    <table border="1">
+        <tr>
+            <th>ISBN</th>
+            <th>タイトル</th>
+            <th>著者</th>
+            <th>出版社</th>
+            <th>出版日</th>
+            <th>ジャンル</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.isbn }}</td>
+            <td><a href="{% url 'detail' book.id %}">{{ book.title }}</a></td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.publisher }}</td>
+            <td>{{ book.published_date }}</td>
+            <td>{{ book.genre }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'insert' %}">本を追加</a>
+{%endblock%}

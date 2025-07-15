@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}-詳細ページ{% endblock %}
+
+{% block content %}
+    <h1>{{ book.title }}</h1>
+    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+    <p><strong>著者:</strong> {{ book.author }}</p>
+    <p><strong>出版社:</strong> {{ book.publisher }}</p>
+    <p><strong>出版日:</strong> {{ book.published_date }}</p>
+    <p><strong>ジャンル:</strong> {{ book.genre }}</p>
+    <a href="{% url 'books_list' %}">← 一覧に戻る</a>
+{% endblock%}
