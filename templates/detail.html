@@ -1,13 +1,26 @@
 {% extends "base.html" %}
-
+{% load django_bootstrap5 %}
 {% block title %}-詳細ページ{% endblock %}
 
 {% block content %}
-    <h1>{{ book.title }}</h1>
-    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-    <p><strong>著者:</strong> {{ book.author }}</p>
-    <p><strong>出版社:</strong> {{ book.publisher }}</p>
-    <p><strong>出版日:</strong> {{ book.published_date }}</p>
-    <p><strong>ジャンル:</strong> {{ book.genre }}</p>
-    <a href="{% url 'books_list' %}">← 一覧に戻る</a>
+    <div class="container my-4">
+    <div class="card shadow">
+        <div class="card-body">
+        <h1 class="card-title">{{ book.title }}</h1>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>ISBN:</strong> {{ book.isbn }}</li>
+            <li class="list-group-item"><strong>著者:</strong> {{ book.author }}</li>
+            <li class="list-group-item"><strong>出版社:</strong> {{ book.publisher }}</li>
+            <li class="list-group-item"><strong>出版日:</strong> {{ book.published_date }}</li>
+            <li class="list-group-item"><strong>ジャンル:</strong> {{ book.genre }}</li>
+        </ul>
+        <div class="mt-4 d-flex gap-3">
+            <a href="{% url 'books_list' %}" class="btn btn-secondary">← 一覧ページへ戻る</a>
+            <a href="{% url 'update' book.id %}" class="btn btn-outline-primary">編集する</a>
+            <a href="{% url 'delete' book.id %}" class="btn btn-outline-danger">削除する</a>
+        </div>
+        </div>
+    </div>
+    </div>
+
 {% endblock%}

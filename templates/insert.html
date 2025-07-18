@@ -1,66 +1,68 @@
 {% extends "base.html" %}
-{% block title %}-追加ページ{% endblock %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ object|yesno:'--本の編集, --本の追加' }}{% endblock %}
 {% block content %}
-<h1>本の追加ページ</h1>
-
-<form action="" method="post">
-    {% csrf_token %}
-    
-    <div>
-    <label for="{{ form.title.id_for_label }}">タイトル:</label>
-    {{ form.title }}
-    {% if form.title.errors %}
-        {% for error in form.title.errors %}
-        <div class="field-error">{{ error }}</div>
-        {% endfor %}
-    {% endif %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2 class="mb-0">本の{{object|yesno:'編集,追加'}}ページ</h2>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}">タイトル:</label>
+                            {{ form.title }}
+                            {% for error in form.title.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.author.id_for_label }}">著者:</label>
+                            {{ form.author }}
+                            {% for error in form.author.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.publisher.id_for_label }}">出版社:</label>
+                            {{ form.publisher }}
+                            {% for error in form.publisher.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.published_date.id_for_label }}">出版日:</label>
+                            {{ form.published_date }}
+                            {% for error in form.published_date.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.isbn.id_for_label }}">ISBN:</label>
+                            {{ form.isbn }}
+                            {% for error in form.isbn.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.genre.id_for_label }}">ジャンル:</label>
+                            {{ form.genre }}
+                            {% for error in form.genre.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">{{object|yesno:'更新,作成'}}</button>
+                    </form>
+                    <div class="mt-3">
+                        <a href="{% url 'books_list'%}" class="btn btn-secondary">← 一覧ページへ戻る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-
-    <div>
-        <label for="{{ form.author.id_for_label }}">著者:</label>
-        {{ form.author }}
-        {% for error in form.author.errors %}
-            <div class="field-error">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-    <div>
-        <label for="{{ form.publisher.id_for_label }}">出版社:</label>
-        {{ form.publisher }}
-        {% for error in form.publisher.errors %}
-            <div class="field-error">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-    <div>
-        <label for="{{ form.published_date.id_for_label }}">出版日:</label>
-        {{ form.published_date }}
-        {% for error in form.published_date.errors %}
-            <div class="field-error">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-    <div>
-        <label for="{{ form.isbn.id_for_label }}">ISBN:</label>
-        {{ form.isbn }}
-        {% for error in form.isbn.errors %}
-            <div class="field-error">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-    <div>
-        <label for="{{ form.genre.id_for_label }}">ジャンル:</label>
-        {{ form.genre }}
-        {% for error in form.genre.errors %}
-            <div class="field-error">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-
-    <button type="submit">作成</button>
-</form>
-<div>
-    <a href="{% url 'books_list'%}">一覧ページへ戻る</a>
 </div>
 {% endblock  %}

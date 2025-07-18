@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}-本の削除{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title">本の削除</h2>
+            <p class="mb-4">"{{ object.title }}"の情報を削除しますか？</p>
+            <form action="" method="post" class="mb-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">削除</button>
+                <a href="{% url 'books_list' %}" class="btn btn-secondary ms-2">一覧ページへ戻る</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock  %}

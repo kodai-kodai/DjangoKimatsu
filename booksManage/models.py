@@ -11,7 +11,7 @@ class Books(models.Model):
     publisher = models.CharField(verbose_name="出版社", max_length=140)
     published_date = models.DateTimeField(verbose_name="出版日", null=True, blank=True)
     genre = models.CharField(verbose_name="ジャンル", max_length=140)
-
+    rent = models.BooleanField(verbose_name="貸出状況", default=False)
     def get_absolute_url(self):
         return reverse("detail", kwargs={"pk": self.pk})
     
