@@ -51,3 +51,15 @@ class BooksUpdateView(generic.UpdateView):
     model = Books
     template_name = "insert.html"
     form_class = BookForm
+    
+from .forms import SearchForm       # forms.pyからsearchFormクラスをインポート
+# 検索機能のビュー
+def search(request):
+    articles = None # 検索結果を格納する変数を初期化
+    searchform = SearchForm(request.GET) # GETリクエストで送信したデータが格納される（詳細は解説にて）
+        
+    # Formに正常なデータがあれば
+    if searchform.is_valid():
+        query = searchform.cleaned_data['words']   # queryにフォームが持っているデータを代入
+        articles = Books.objects.filter(content__icontains=query)    # クエリを含むレコードをfilterメソッドで取り出し、articles変数に代入
+        return render(request, 'results.html', {'articles':articles,'searchform':searchform})
