@@ -15,7 +15,7 @@
             <li class="list-group-item"><strong>ジャンル:</strong> {{ book.genre }}</li>
         </ul>
         <div class="mt-4 d-flex gap-3">
-            <a href="{% url 'books_list' %}" class="btn btn-secondary">← 一覧ページへ戻る</a>
+            <a href="{% url 'index' %}" class="btn btn-secondary">← 一覧ページへ戻る</a>
             <a href="{% url 'update' book.id %}" class="btn btn-outline-primary">編集する</a>
             <a href="{% url 'delete' book.id %}" class="btn btn-outline-danger">削除する</a>
         </div>

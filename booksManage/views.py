@@ -9,7 +9,7 @@ from .forms import BookForm
 class BooksView(View):
     def get(self, request):
         books = Books.objects.all()
-        return render(request, 'books_list.html', {'books': books})
+        return render(request, 'index.html', {'books': books})
 
     def post(self, request):
         isbn = request.POST.get('isbn')
@@ -28,7 +28,7 @@ class BooksView(View):
             genre=genre
         )
 
-        return redirect('books_list')  # POST成功後に一覧に戻る
+        return redirect('index')  # POST成功後に一覧に戻る
     
 class BooksDetailView(generic.DetailView):
     model = Books
@@ -45,7 +45,7 @@ class BooksInsertView(generic.CreateView):
 class BooksDeleteView(generic.DeleteView):
     model = Books
     template_name = "delete.html"
-    success_url = reverse_lazy('books_list')
+    success_url = reverse_lazy('index')
 
 class BooksUpdateView(generic.UpdateView):
     model = Books
@@ -55,11 +55,15 @@ class BooksUpdateView(generic.UpdateView):
 from .forms import SearchForm       # forms.pyからsearchFormクラスをインポート
 # 検索機能のビュー
 def search(request):
-    articles = None # 検索結果を格納する変数を初期化
+    books = None # 検索結果を格納する変数を初期化
     searchform = SearchForm(request.GET) # GETリクエストで送信したデータが格納される（詳細は解説にて）
         
     # Formに正常なデータがあれば
     if searchform.is_valid():
-        query = searchform.cleaned_data['words']   # queryにフォームが持っているデータを代入
-        articles = Books.objects.filter(content__icontains=query)    # クエリを含むレコードをfilterメソッドで取り出し、articles変数に代入
-        return render(request, 'results.html', {'articles':articles,'searchform':searchform})
+        query = searchform.cleaned_data['words']
+        books_by_title = Books.objects.filter(title__icontains=query)
+        books_by_author = Books.objects.filter(author__icontains=query)
+
+        books = books_by_title.union(books_by_author)
+
+    return render(request, 'results.html', {'books':books,'searchform':searchform})
