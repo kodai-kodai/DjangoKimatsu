@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>あなたが現在借りている本</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>タイトル</th>
+            <th>著者</th>
+            <th>貸出日</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>
+                {% for history in book.renthistory_set.all %}
+                    {% if history.user == user and not history.returned_at %}
+                        {{ history.lent_at }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

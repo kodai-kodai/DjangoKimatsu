@@ -16,8 +16,16 @@
         </ul>
         <div class="mt-4 d-flex gap-3">
             <a href="{% url 'index' %}" class="btn btn-secondary">← 一覧ページへ戻る</a>
+            {% if user.is_authenticated and user.username == "admin" %}
             <a href="{% url 'update' book.id %}" class="btn btn-outline-primary">編集する</a>
             <a href="{% url 'delete' book.id %}" class="btn btn-outline-danger">削除する</a>
+            {% else %}
+                {% if not book.rent %}
+                    <a href="{% url 'lent' book.id %}" class="btn btn-outline-success">この本を借りる</a>
+                {% elif book.rent_user == user %}
+                    <a href="{% url 'return_book' book.id %}" class="btn btn-outline-warning">本を返す</a>
+                {% endif %}
+            {% endif %}
         </div>
         </div>
     </div>

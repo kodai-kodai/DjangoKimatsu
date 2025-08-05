@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}あなたの貸出履歴{% endblock %}
+
+{% block content %}
+<h2>{{ request.user }}さんの貸出履歴</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>書籍名</th>
+            <th>貸出日</th>
+            <th>返却日</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for h in histories %}
+        <tr>
+            <td>{{ h.book.title }}</td>
+            <td>{{ h.lent_at|date:"Y/m/d H:i" }}</td>
+            <td>
+                {% if h.returned_at %}
+                    {{ h.returned_at|date:"Y/m/d H:i" }}
+                {% else %}
+                    <span class="text-danger">未返却</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">履歴がまだありません。</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

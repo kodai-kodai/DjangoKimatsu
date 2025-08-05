@@ -19,19 +19,25 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                {% if user.is_authenticated %}
+                    <span class="nav-link active">{{ user }}でログイン中</span>
+                {% endif %}
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="nav-link active">ログアウト</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav-link active">ログイン</a>
+                {% endif %}
             </li>
             <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">三</a>
             <ul class="dropdown-menu">
                 <li>
-                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="{% url 'my_books' %}">借りている本を見る</a>
                 </li>
                 <li>
-                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="{% url 'book_history' %}">貸出履歴</a>
                 </li>
                 <li>
                 <hr class="dropdown-divider" />

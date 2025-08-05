@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}-貸出完了{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title">貸出状況</h2>
+            {% if already_lent %}
+                <p class="mb-4 text-danger">「{{ book.title }}」は既に借りられています。</p>
+            {% else %}
+                <p class="mb-4">「{{ book.title }}」を借りました。</p>
+            {% endif %}
+            <a href="{% url 'index' %}" class="btn btn-secondary">一覧ページへ戻る</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
