@@ -1,28 +1,268 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>あなたが現在借りている本</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>タイトル</th>
-            <th>著者</th>
-            <th>貸出日</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for book in books %}
-        <tr>
-            <td>{{ book.title }}</td>
-            <td>{{ book.author }}</td>
-            <td>
-                {% for history in book.renthistory_set.all %}
-                    {% if history.user == user and not history.returned_at %}
-                        {{ history.lent_at }}
-                    {% endif %}
-                {% endfor %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="fas fa-book-reader me-2"></i>現在の借用書
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-user me-1"></i>
+                        <strong>{{ request.user }}</strong>さんが現在借りている図書
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'book_history' %}" class="btn btn-outline-info">
+                        <i class="fas fa-history me-1"></i>貸出履歴
+                    </a>
+                    <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>一覧に戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if books %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light py-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0 text-dark">
+                                    <i class="fas fa-clipboard-list me-2"></i>借用中の図書
+                                </h5>
+                            </div>
+                            <div class="col-auto">
+                                <span class="badge bg-success fs-6 px-3 py-2">
+                                    借用中: {{ books|length }} 冊
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-bordered mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">
+                                            <i class="fas fa-book-open me-1"></i>タイトル
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-user me-1"></i>著者
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-calendar-plus me-1"></i>貸出日
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-clock me-1"></i>経過日数
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-cogs me-1"></i>操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for book in books %}
+                                    <tr class="align-middle">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-book text-primary me-3"></i>
+                                                <div>
+                                                    <div class="fw-semibold mb-1">
+                                                        <a href="{% url 'detail' book.id %}" 
+                                                           class="text-decoration-none text-primary">
+                                                            {{ book.title }}
+                                                        </a>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <span class="badge bg-secondary rounded-pill small">
+                                                            {{ book.genre }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-muted">
+                                                <i class="fas fa-user-circle me-1"></i>
+                                                {{ book.author }}
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            {% for history in book.renthistory_set.all %}
+                                                {% if history.user == user and not history.returned_at %}
+                                                    <div class="d-flex flex-column">
+                                                        <span class="fw-bold">{{ history.lent_at|date:"Y/m/d" }}</span>
+                                                        <small class="text-muted">{{ history.lent_at|date:"H:i" }}</small>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% for history in book.renthistory_set.all %}
+                                                {% if history.user == user and not history.returned_at %}
+                                                    {% with days=history.lent_at|timesince %}
+                                                        <span class="badge bg-info rounded-pill px-3">
+                                                            <i class="fas fa-hourglass-half me-1"></i>{{ days }}
+                                                        </span>
+                                                    {% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                <a href="{% url 'detail' book.id %}" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   title="詳細を見る">詳細を見る
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'return_book' book.id %}" 
+                                                   class="btn btn-sm btn-outline-warning" 
+                                                   title="返却する">返却する
+                                                    <i class="fas fa-undo"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light py-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    返却期限を過ぎた図書がある場合は、お早めに返却してください
+                                </small>
+                            </div>
+                            <div class="col-auto">
+                                <a href="{% url 'book_history' %}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-history me-1"></i>履歴を見る
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body text-center py-5">
+                                <div class="mb-4">
+                                    <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+                                    <h3 class="text-muted mb-3">現在借りている本はありません</h3>
+                                    <p class="lead text-muted mb-4">
+                                        図書館から新しい本を借りてみませんか？
+                                    </p>
+                                </div>
+                                
+                                <div class="recommendations bg-light rounded p-4 mb-4">
+                                    <h6 class="text-dark mb-3">
+                                        <i class="fas fa-star me-1"></i>おすすめの活用方法
+                                    </h6>
+                                    <ul class="list-unstyled text-muted mb-0">
+                                        <li class="mb-2">
+                                            <i class="fas fa-search text-primary me-2"></i>
+                                            興味のあるジャンルから本を探す
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-fire text-danger me-2"></i>
+                                            人気の本や新着図書をチェック
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-random text-info me-2"></i>
+                                            まだ読んだことのないジャンルに挑戦
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-users text-success me-2"></i>
+                                            友人におすすめの本を聞いてみる
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-center">
+                                    <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-book me-2"></i>図書を探す
+                                    </a>
+                                    <a href="{% url 'book_history' %}" class="btn btn-outline-info btn-lg">
+                                        <i class="fas fa-history me-2"></i>過去の履歴
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.recommendations {
+    border-left: 4px solid #28a745;
+}
+
+.btn {
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    border-radius: 15px;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-outline-primary:hover {
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.btn-outline-warning:hover {
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+}
+
+.btn-outline-info:hover {
+    box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2);
+}
+
+.btn-outline-secondary:hover {
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+</style>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+
 # Create your models here.
 class Books(models.Model):
     class Meta:
@@ -13,6 +14,7 @@ class Books(models.Model):
     genre = models.CharField(verbose_name="ジャンル", max_length=140)
     rent = models.BooleanField(verbose_name="貸出状況", default=False)
     rent_user = models.ForeignKey(get_user_model(), verbose_name="貸出ユーザー", null=True, blank=True, on_delete=models.SET_NULL)
+    image = models.ImageField(upload_to='images/', null=True, blank=True) # upload_to='images/' により、MEDIA_ROOT/images/ に保存される
     
     
     def get_absolute_url(self):
@@ -29,3 +31,15 @@ class RentHistory(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.book.title}"
+    
+
+
+class Review(models.Model):
+    book = models.ForeignKey('Books', on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    content = models.TextField(verbose_name="レビュー内容")
+    rating = models.PositiveIntegerField(verbose_name="評価", default=3)  # 1〜5など
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.book.title} ({self.rating}★)"

@@ -11,7 +11,7 @@
                     <h2 class="mb-0">本の{{object|yesno:'編集,追加'}}ページ</h2>
                 </div>
                 <div class="card-body">
-                    <form action="" method="post">
+                    <form action="" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="{{ form.title.id_for_label }}">タイトル:</label>
@@ -55,6 +55,15 @@
                                 <div class="text-danger">{{ error }}</div>
                             {% endfor %}
                         </div>
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}">表紙画像:</label>
+                            {{ form.image }}
+                            {% for error in form.image.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+
                         <button type="submit" class="btn btn-primary mt-3">{{object|yesno:'更新,作成'}}</button>
                     </form>
                     <div class="mt-3">

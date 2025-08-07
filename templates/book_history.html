@@ -2,33 +2,234 @@
 {% block title %}あなたの貸出履歴{% endblock %}
 
 {% block content %}
-<h2>{{ request.user }}さんの貸出履歴</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>書籍名</th>
-            <th>貸出日</th>
-            <th>返却日</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for h in histories %}
-        <tr>
-            <td>{{ h.book.title }}</td>
-            <td>{{ h.lent_at|date:"Y/m/d H:i" }}</td>
-            <td>
-                {% if h.returned_at %}
-                    {{ h.returned_at|date:"Y/m/d H:i" }}
-                {% else %}
-                    <span class="text-danger">未返却</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">履歴がまだありません。</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="fas fa-history me-2"></i>貸出履歴
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-user me-1"></i>
+                        <strong>{{ request.user }}</strong>さんの図書利用記録
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'my_books' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-book me-1"></i>現在借りている本
+                    </a>
+                    <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>一覧に戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if histories %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light py-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0 text-dark">
+                                    <i class="fas fa-chart-line me-2"></i>利用統計
+                                </h5>
+                            </div>
+                            <div class="col-auto">
+                                <span class="badge bg-primary fs-6 px-3 py-2">
+                                    総利用回数: {{ histories|length }} 回
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-bordered mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">
+                                            <i class="fas fa-book-open me-1"></i>書籍名
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-calendar-plus me-1"></i>貸出日
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-calendar-check me-1"></i>返却日
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-clock me-1"></i>利用期間
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-info-circle me-1"></i>状態
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for h in histories %}
+                                    <tr class="align-middle">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-book text-primary me-2"></i>
+                                                <div>
+                                                    <div class="fw-semibold">{{ h.book.title }}</div>
+                                                    <small class="text-muted">{{ h.book.author }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-bold">{{ h.lent_at|date:"Y/m/d" }}</span>
+                                                <small class="text-muted">{{ h.lent_at|date:"H:i" }}</small>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if h.returned_at %}
+                                                <div class="d-flex flex-column">
+                                                    <span class="fw-bold">{{ h.returned_at|date:"Y/m/d" }}</span>
+                                                    <small class="text-muted">{{ h.returned_at|date:"H:i" }}</small>
+                                                </div>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark rounded-pill px-3">
+                                                    <i class="fas fa-clock me-1"></i>未返却
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if h.returned_at %}
+                                                {% with days=h.returned_at|timeuntil:h.lent_at %}
+                                                    <span class="badge bg-info rounded-pill">
+                                                        <i class="fas fa-calendar-day me-1"></i>
+                                                        {% if days %}{{ days }}{% else %}当日返却{% endif %}
+                                                    </span>
+                                                {% endwith %}
+                                            {% else %}
+                                                {% with days=h.lent_at|timesince %}
+                                                    <span class="badge bg-secondary rounded-pill">
+                                                        <i class="fas fa-hourglass-half me-1"></i>{{ days }}
+                                                    </span>
+                                                {% endwith %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if h.returned_at %}
+                                                <span class="badge bg-success rounded-pill px-3">
+                                                    <i class="fas fa-check me-1"></i>返却済み
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger rounded-pill px-3">
+                                                    <i class="fas fa-exclamation me-1"></i>貸出中
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body text-center py-5">
+                                <div class="mb-4">
+                                    <i class="fas fa-history fa-4x text-muted mb-3"></i>
+                                    <h3 class="text-muted mb-3">まだ利用履歴がありません</h3>
+                                    <p class="lead text-muted mb-4">
+                                        図書館の本を借りると、ここに履歴が表示されます
+                                    </p>
+                                </div>
+                                
+                                <div class="getting-started bg-light rounded p-4 mb-4">
+                                    <h6 class="text-dark mb-3">
+                                        <i class="fas fa-lightbulb me-1"></i>図書館の利用方法
+                                    </h6>
+                                    <ul class="list-unstyled text-muted mb-0">
+                                        <li class="mb-2">
+                                            <i class="fas fa-search text-primary me-2"></i>
+                                            お気に入りの本を検索・発見
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-hand-holding text-success me-2"></i>
+                                            「この本を借りる」ボタンをクリック
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-book-reader text-info me-2"></i>
+                                            ゆっくりと読書を楽しむ
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-undo text-warning me-2"></i>
+                                            読み終わったら返却手続き
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-center">
+                                    <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-book me-2"></i>図書を探す
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.getting-started {
+    border-left: 4px solid #007bff;
+}
+
+.btn {
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-outline-primary:hover {
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.btn-outline-secondary:hover {
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+</style>
 {% endblock %}

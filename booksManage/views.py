@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.views import View, generic
 from .models import Books, RentHistory
 from .forms import BookForm
+from .forms import PhotoForm
 
 
 class BooksView(View):
@@ -22,6 +23,7 @@ class BooksView(View):
         published_date = request.POST.get('published_date')
         genre = request.POST.get('genre')
         rent = request.POST.get('rent')
+        image = request.POST.get('image')
         
         Books.objects.create(
             isbn=isbn,
@@ -31,6 +33,7 @@ class BooksView(View):
             published_date=published_date,
             genre=genre,
             rent=rent,
+            image=image,
         )
 
         return redirect('index')  # POST成功後に一覧に戻る
@@ -39,6 +42,13 @@ class BooksDetailView(generic.DetailView):
     model = Books
     template_name = 'detail.html'
     context_object_name = 'book'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['reviews'] = Review.objects.filter(book=self.object).order_by('-created_at')
+        context['form'] = ReviewForm()
+        return context
+
 
 
 class BooksInsertView(LoginRequiredMixin, generic.edit.CreateView):
@@ -107,3 +117,36 @@ def my_books(request):
 def book_history(request):
     histories = RentHistory.objects.filter(user=request.user).order_by('-lent_at')
     return render(request, 'book_history.html', {'histories': histories})
+
+def photo_upload(request):
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('photo_list')
+    else:
+        form = PhotoForm()
+    return render(request, 'detail.html', {'form': form})
+
+from django.shortcuts import get_object_or_404, redirect, render
+from .models import Books, Review
+from .forms import ReviewForm
+
+
+
+
+@login_required
+def review_create(request, pk):
+    book = get_object_or_404(Books, pk=pk)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = book
+            review.user = request.user
+            review.save()
+            return redirect('detail', pk=book.pk)
+    else:
+        form = ReviewForm()
+    return render(request, 'review_form.html', {'form': form, 'book': book})
+

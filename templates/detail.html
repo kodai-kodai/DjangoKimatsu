@@ -3,32 +3,70 @@
 {% block title %}-詳細ページ{% endblock %}
 
 {% block content %}
-    <div class="container my-4">
-    <div class="card shadow">
-        <div class="card-body">
-        <h1 class="card-title">{{ book.title }}</h1>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item"><strong>ISBN:</strong> {{ book.isbn }}</li>
-            <li class="list-group-item"><strong>著者:</strong> {{ book.author }}</li>
-            <li class="list-group-item"><strong>出版社:</strong> {{ book.publisher }}</li>
-            <li class="list-group-item"><strong>出版日:</strong> {{ book.published_date }}</li>
-            <li class="list-group-item"><strong>ジャンル:</strong> {{ book.genre }}</li>
-        </ul>
-        <div class="mt-4 d-flex gap-3">
-            <a href="{% url 'index' %}" class="btn btn-secondary">← 一覧ページへ戻る</a>
-            {% if user.is_authenticated and user.username == "admin" %}
-            <a href="{% url 'update' book.id %}" class="btn btn-outline-primary">編集する</a>
-            <a href="{% url 'delete' book.id %}" class="btn btn-outline-danger">削除する</a>
-            {% else %}
-                {% if not book.rent %}
-                    <a href="{% url 'lent' book.id %}" class="btn btn-outline-success">この本を借りる</a>
-                {% elif book.rent_user == user %}
-                    <a href="{% url 'return_book' book.id %}" class="btn btn-outline-warning">本を返す</a>
-                {% endif %}
-            {% endif %}
-        </div>
-        </div>
-    </div>
-    </div>
+<div class="container my-4">
+  <div class="card shadow">
+    <div class="card-body">
 
-{% endblock%}
+      <!-- タイトルと基本情報＋画像を横並び -->
+      <div class="d-flex flex-wrap gap-4 align-items-start">
+        <div class="flex-grow-1">
+          <h1 class="card-title mb-4">{{ book.title }}</h1>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item py-3"><strong>ISBN:</strong> {{ book.isbn }}</li>
+            <li class="list-group-item py-3"><strong>著者:</strong> {{ book.author }}</li>
+            <li class="list-group-item py-3"><strong>出版社:</strong> {{ book.publisher }}</li>
+            <li class="list-group-item py-3"><strong>出版日:</strong> {{ book.published_date }}</li>
+            <li class="list-group-item py-3"><strong>ジャンル:</strong> {{ book.genre }}</li>
+          </ul>
+        </div>
+        <div>
+          {% if book.image %}
+            <img src="{{ book.image.url }}" alt="{{ book.title }}の画像" style="max-width:300px;" class="img-fluid rounded">
+          {% else %}
+            <p>画像はありません。</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- レビュー一覧 -->
+      <h3 class="mb-3">レビュー一覧</h3>
+      {% for review in reviews %}
+        <div class="border p-4 mb-4 rounded">
+          <strong>{{ review.user.username }}</strong>（{{ review.rating }}★）<br>
+          <small class="text-muted">{{ review.created_at|date:"Y年m月d日 H:i" }}</small>
+          <p class="mt-3 mb-0">{{ review.content }}</p>
+        </div>
+      {% empty %}
+        <p>レビューはまだありません。</p>
+      {% endfor %}
+
+      <!-- レビュー投稿 -->
+      {% if user.is_authenticated %}
+        <hr class="my-4">
+        <h3 class="mb-3">レビューを書く</h3>
+        <a href="{% url 'review_create' book.id %}" class="btn btn-primary">レビューを投稿</a>
+      {% else %}
+        <p><a href="{% url 'login' %}?next={% url 'review_create' book.id %}">ログイン</a>するとレビューを投稿できます。</p>
+      {% endif %}
+
+      <!-- ボタン群 -->
+      <div class="mt-5 d-flex flex-wrap gap-3">
+        <a href="{% url 'index' %}" class="btn btn-secondary">← 一覧ページへ戻る</a>
+        {% if user.is_authenticated and user.username == "admin" %}
+          <a href="{% url 'update' book.id %}" class="btn btn-outline-primary">編集する</a>
+          <a href="{% url 'delete' book.id %}" class="btn btn-outline-danger">削除する</a>
+        {% else %}
+          {% if not book.rent %}
+            <a href="{% url 'lent' book.id %}" class="btn btn-outline-success">この本を借りる</a>
+          {% elif book.rent_user == user %}
+            <a href="{% url 'return_book' book.id %}" class="btn btn-outline-warning">本を返す</a>
+          {% endif %}
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

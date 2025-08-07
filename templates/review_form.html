@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}-レビュー投稿{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title">レビューを書く</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">投稿する</button>
+                <a href="{% url 'detail' book.pk %}" class="btn btn-secondary ms-2">← 本の詳細へ戻る</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

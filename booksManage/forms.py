@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from .models import Books
+from .models import Books, Review
 
 class BookForm(forms.ModelForm):
     class Meta:
@@ -20,3 +20,16 @@ class SearchForm(forms.Form):
             'placeholder': 'タイトル・著者',
         })
     )
+    
+
+
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Books
+        fields = ['title', 'author', 'publisher', 'published_date', 'isbn', 'genre', 'image']
+        
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['content', 'rating']
