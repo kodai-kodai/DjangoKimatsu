@@ -36,9 +36,6 @@ SECRET_KEY = "django-insecure-ba)5!gl*e@gnlor8b-m9j9#vh(h2_e%_lws)i-4v1eh4)70s(1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -118,6 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+
+ALLOWED_HOSTS = ['*']
 
 LANGUAGE_CODE = "ja"
 
